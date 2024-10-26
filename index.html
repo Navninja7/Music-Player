@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="musical-note.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCS Music Player</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="container">
+<audio id="music">
+    </audio>
+
+    </div>
+
+    
+
+    <div id="audio-spectrum-container" class="audio-spectrum-container">
+<div id="track-info" class="track-info">
+    <p id="track-name">Choose your favorite NCS playlist and enjoy!</p>
+</div>
+
+<!-- 3D Spectrum -->
+
+<div id="circles-spectrum-container-main">
+
+    <div id="circles-spectrum-container" class="circles-spectrum-container hide">
+        
+        <div id='plane-1' class="plane"></div>
+            <div id='plane-2' class="plane"></div>
+                <div id='plane-3' class="plane"></div>
+                
+    </div>
+    </div>
+
+    <!-- Circles Spectrum -->
+
+    <div id="circles-spectrum-2d-container-main">
+
+        <div id="circles-spectrum-2d-container" class="circles-spectrum-2d-container hide">
+
+            
+            
+            <!-- <div id='circles-2d-spectrum-plane' class="plane"></div> -->
+                
+                    
+        </div>
+        </div>
+
+    <div id="big-title">
+        <h1>NCS</h1>
+    </div>
+
+    <!-- 2D Spectrum -->
+
+        <div id="audio-bars-container" class="audio-bars-container"> 
+
+        </div>
+        
+        
+        <div id="player-controls" class="player-controls">
+
+            <div id="slider" class="slider hide">
+                <div id="time-elapsed" class="time-elapsed"></div>
+                <div id="slider-css" class="slider-css">
+                    <input id='slider-input' type="range" value="0" class="slider" step="0.01">
+                </div>
+            </div>
+
+            <div class="control-buttons">
+
+                <div id='shuffle' class="shuffle-repeat hide">
+                    <i class="fa-solid fa-shuffle"></i>
+                </div>
+
+                <div id="no-shuffle" class="shuffle-repeat">
+                    <div id="shuffle-slash"></div>
+                    <i class="fa-solid fa-shuffle"></i>
+                </div>
+
+
+<div id="previous-track-container" class="next-track-container">
+                <div id='previous-track' class="next-track">
+                    <i class="fa-solid fa-play"></i>
+                    <div id="next-track-line"></div>
+                   </div> 
+                </div>
+
+                <div id="play-pause-container"  class="play-pause-container">
+                    <div id="play-pause" class="play-pause">
+                        <i id='play-pause-icon' class="fa-solid fa-play"></i>
+                </div>
+    
+            </div>
+
+            <div id='next-track-container' class="next-track-container">
+
+            <div id='next-track' class="next-track">
+                <i class="fa-solid fa-play"></i>
+                <div id="next-track-line"></div>
+               </div> 
+            </div>
+
+            <div id='repeat' class="shuffle-repeat">
+                <i class="fa-solid fa-repeat"></i>
+            </div>
+
+            <div id='repeat-one' class="shuffle-repeat hide">
+                <div id="circle-icon">
+                    <i class="fa fa-circle" aria-hidden="true"></i>
+                </div>
+                <div id="one-icon">
+                    <i class="fa-solid fa-1"></i>
+                </div>
+                <i class="fa-solid fa-repeat"></i>
+            </div>
+
+
+
+
+            </div>
+                
+        </div>
+        </div>
+
+        <div id='playlist' class="playlist hide">
+            
+
+        </div>
+
+        <div id="folder-input-container" class="folder-input-container">
+            <label for="folder-input" class="folder-input-label"></label>
+            <input type="file" id='folder-input' webkitdirectory />
+        </div>
+
+        <div id="volume-control-container" class="volume-control-container">
+
+            <!-- Mute volume icon -->
+            <!-- <i class="fas fa-volume-mute"></i> -->
+            <div id="volume-control-icon"><i class="fa fa-volume-up" aria-hidden="true"></i></div>
+            <div id="volume-control-slider" class="volume-control-slider">
+                <input id='volume-control-slider-input' type="range" min="0" max="1" step="0.01">
+            </div>
+        </div>
+        
+
+        <div id="toggle-spectrum-container" class="toggle-spectrum-container">
+            <div id="toggle-background" class="toggle-background left"></div>
+            <div id="2D" class="toggle-tile">
+                <p class="toggle-spectrum-text">Bars</p>
+                
+            </div>
+
+            <div id="3D" class="toggle-tile">
+                <p class="toggle-spectrum-text">3D</p>
+            </div>
+
+            <div id="circles" class="toggle-tile">
+                <p class="toggle-spectrum-text">Radial</p>
+            </div>
+        </div>
+
+        <div id="big-title-edit">
+            <input id='big-title-edit-input' type="text" />
+        </div>
+    
+</body>
+<script src="index.js"></script>
+</html>

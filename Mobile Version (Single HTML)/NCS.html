@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="musical-note.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCS Music Player</title>
+
+
+    <style>
+
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+*{
+
+    box-sizing: border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    display: flex;
+    color:white;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Pixelify Sans', sans-serif;
+    height: 100vh;
+    width:100vw;
+    overflow: hidden;
+}
+
+::selection{
+    background-color:dodgerblue;
+    color:white;
+}
+
+.audio-spectrum-container{
+    position: relative;
+    display: flex;
+    /* justify-content: center; */
+    height: 100vh;
+    width:100vw;
+    background-color: #000;
+    flex-direction: column;
+}
+
+.track-info{
+    display: flex;
+    width:100%;
+    height:30%;
+    color:white;
+}
+
+.track-info p{
+    margin:10px 0;
+    font-size: 24px;
+    font-weight: 100;
+    color:white;
+}
+
+/* 2D Spectrum */
+
+.audio-bars-container{
+    display: flex;
+    justify-content: space-evenly;
+    height:calc(70% - 80px);
+    width:100vw;
+    align-items: flex-end;
+}
+.audio-bar{
+    width:5px;
+    height:0px;
+    margin:0 1px;
+    background: linear-gradient(aqua , dodgerblue);
+}
+
+/* 3D spectrum */
+
+.circles-spectrum-container-main{
+    position: absolute;
+    transform-style: preserve-3d;
+    perspective: 200px;
+}
+
+.circles-spectrum-container{
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    left:20%;
+    top:45%;
+    /* display: none; */
+        justify-content: center;
+        align-items: center;
+    transform-style: preserve-3d;
+    perspective: 200px;
+    transform:rotateX(30deg) rotateY(20deg) rotateZ(0deg) scale(1);
+}
+
+.plane{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    height:100px;
+    width:100px;
+    background-color: transparent;
+    transform: rotateX(0deg);
+    transform-style: preserve-3d;
+    perspective: 400px;
+    transform-origin: center center;
+}
+
+.line{
+    transform-origin: bottom center;
+    position: absolute;
+    width:1px;
+    height:0px;
+    background: linear-gradient(yellow 3px,#000 3px);
+    border-radius: 0%;
+}
+
+
+/* Circles Spectrum (2D) */
+
+.circles-spectrum-2d-container-main{
+    position: absolute;
+    
+}
+
+.circles-spectrum-2d-container{
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    left:20%;
+    top:15%;
+    /* background: green; */
+    height:220px;
+    width:220px;
+    border-radius: 50%;
+    /* border:2px solid white; */
+    /* box-shadow: 0 0 20px 5px #999; */
+    z-index: 2;
+    /* display: none; */
+        align-items: center;
+    /* transform:rotateX(30deg) rotateY(20deg) rotateZ(0deg) scale(1); */
+}
+
+.circles-spectrum-bar{
+    z-index: 3;
+    position: absolute;
+    left:calc(50%-2.5px);
+    top:110px;
+    width:5px;
+    height:100px;
+    background: linear-gradient(transparent 150px, dodgerblue 150px);
+    border-radius: 0%;
+    transform-origin: center top;
+    /* box-shadow: 0 0 5px 2px aqua; */
+
+    /* transform: rotate(180deg); */
+}
+
+.glow-element{
+    z-index: 3;
+    position: absolute;
+    left:calc(50%-2.5px);
+    top:110px;
+    width:5px;
+    height:2px;
+    background-color: aqua;
+    box-shadow: 0 0 1px 1px dodgerblue;
+    border-radius: 0%;
+    transform-origin: center top;
+    transition:all 0.8s ease-in-out;
+    opacity: 0.0;
+    /* box-shadow: 0 0 5px 2px aqua; */
+
+    /* transform: rotate(180deg); */
+}
+
+.glow{
+    opacity:1;
+    transition:all 0.3s ease-in-out;
+}
+
+
+
+
+
+#big-title{
+    position: absolute;
+    left:40%;
+    top:30%;
+    margin:auto auto;
+    color:white;
+    font-size: 48px;
+    text-shadow: 0px 0px 20px #aaa;
+    z-index: 3;
+    transition: all 2s ease-in-out;
+}
+
+.slider{
+    flex-direction: row;
+    position: absolute;
+    top:-13px;
+    left:0;
+    width:100%;
+    height: 13px;
+    background-color: #333;
+    color:white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.time-elapsed{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width:20%;
+}
+.slider-css{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height:100%;
+    width:80%;
+}
+.slider input[type="range"]{
+    -webkit-appearance: none;
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    border-radius: 0%;
+    background: #222;
+}
+
+.slider::-webkit-slider-thumb{
+    position: relative;
+    bottom:0%;
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 30%;
+    background-color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 10px 3px #aaa;
+    transition: all 0.2s ease-in-out;
+    z-index: 4;
+}
+
+.slider::-webkit-slider-thumb:hover{
+    background-color: dodgerblue;
+    transform: scale(1.4);
+    transition: all 0.1s ease-in-out;
+    
+}
+
+.slider::-webkit-slider-runnable-track{
+    -webkit-appearance: none;
+    height:13px;
+    border-radius: 5px;
+}
+.player-controls{
+    position: fixed;
+    bottom:0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height:70px;
+    background-color: #222;
+    z-index: 7;
+}
+
+.control-buttons{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    /* background: green; */
+    display: flex;
+    width:300px;
+    height:100%;
+}
+
+.play-pause-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    /* border:2px solid #222; */
+    height: 50px;
+    width:50px;
+    background-color: #333;
+}
+
+.selectable div:not(.control-buttons):hover{
+    background-color: #555;
+    cursor: pointer;
+}
+.selectable div:not(.control-buttons):active{
+    background-color: #545;
+}
+
+.play-pause-container i{
+    font-size: 24px;
+    color:white;
+}
+
+.next-track-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding:10px;
+    background-color: #333;
+    border-radius: 50px;
+}
+
+.next-track{
+    position: relative;
+    color:white;
+    /* background:#333; */
+}
+
+.shuffle-repeat{
+    padding:10px;
+    border-radius: 50%;
+    background: transparent;
+}
+
+.shuffle-repeat:hover{
+    cursor: pointer;
+    background: #333;
+}
+
+
+
+#previous-track{
+    transform: rotateY(180deg);
+}
+
+#next-track-line{
+    position: absolute;
+    top:1px;
+    left:10px;
+    height:15px;
+    width:3px;
+    background: white;
+    border-radius: 20px;
+}
+
+.playlist{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.1;
+    background-color: #333;
+    color:white;
+    position: absolute;
+    right:20px;
+    top:50px;
+    height:60%;
+    width:300px;
+    overflow:auto;
+
+}
+
+.playlist:hover{
+    opacity: 1;
+}
+
+.playlist div{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding:15px;
+}
+
+.playlist-item{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100%;
+    height:auto;
+    background: #222;
+    border-bottom: 1px solid #333;
+}
+
+.playlist::-webkit-scrollbar{
+    background:#111;
+}
+
+.playlist::-webkit-scrollbar-track{
+    background: #222;
+}
+.playlist::-webkit-scrollbar-thumb{
+    background: #444;
+}
+
+.folder-input-container{
+    z-index: 3;
+    position: absolute;
+}
+
+.playlist-item:hover{
+    cursor: pointer;
+}
+
+.playlist-item:not(.selected):hover{
+    background-color: #333;
+}
+
+.playlist-item:active{
+    background: #344;
+}
+
+.current-track{
+    background-color: #455;
+}
+
+.volume-control-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position:absolute;
+    height:50px;
+    width:200px;
+    bottom:10px;
+    right:15px;
+    z-index: 8;
+}
+
+#volume-control-icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:20%;
+}
+
+#volume-control-icon:hover{
+    cursor: pointer;
+}
+
+.volume-control-slider{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:200px;
+    height:5px;
+    /* background: blue; */
+}
+
+.volume-control-slider input[type="range"]{
+    -webkit-appearance: none;
+    height:5px;
+    background: #333;
+}
+.volume-control-slider input::-webkit-slider-thumb{
+    position: relative;
+    bottom:0%;
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 30%;
+    background-color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 10px 3px #aaa;
+    transition: all 0.2s ease-in-out;
+    z-index: 4;
+}
+
+.volume-control-slider::-webkit-slider-thumb:hover{
+    background-color: dodgerblue;
+    transform: scale(1.4);
+    transition: all 0.1s ease-in-out;
+    
+}
+
+.volume-control-slider::-webkit-slider-runnable-track{
+    -webkit-appearance: none;
+    height:13px;
+    border-radius: 5px;
+    background: green;
+}
+
+@media only screen and (max-width:800px) {
+    .playlist{
+        opacity:0.1;
+        right:0;
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        height:150px;
+        background-color: rgba(51, 51, 51,0.6);
+        width:100%;
+        margin:0 auto;
+        top:100px;
+        transition:all 0.3s ease-in-out;
+        z-index: 4;
+    }
+
+    .playlist:hover{
+        opacity:1;
+    }
+    .playlist div{
+        display: flex;
+        justify-content: flex-start;
+        padding:10px;
+    }
+
+    #volume-control-icon{
+        position: absolute;
+        right:20px;
+        /* background-color: red; */
+    }
+
+    .volume-control-container{
+        width:30px;
+        /* background: green; */
+    }
+    .volume-control-slider{
+        display: none;
+        /* background: red; */
+    }
+
+    .volume-control-container:hover .volume-control-slider{
+        display: flex;
+        transform: rotate(-90deg) translateX(10px) translateY(55px);
+        z-index: 5;
+        width:430px;
+        height:40px;
+        transform-origin: left center;
+        /* background: brown; */
+        cursor: pointer;
+
+    }
+
+    
+
+    /* #volume-control-icon:hover .volume-control-slider{
+        display: flex;
+        transform: rotate(90deg);
+        transform-origin: left center;
+    } */
+
+    
+}
+.hide{
+display:none;
+}
+
+.show{
+display: flex;
+}
+
+
+
+.toggle-spectrum-container{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom:90px;
+    right:10px;
+    height:40px;
+    width:200px;
+    background: #333;
+    border-radius: 15px;
+}
+
+.toggle-tile{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:33%;
+    height:30px;
+    margin:2px;
+    border-radius: 15px;
+    background-color: rgba(1,6,2,0);
+    z-index: 3;
+}
+
+.toggle-tile:hover{
+    cursor: pointer;
+}
+
+.toggle-background{
+    position: absolute;
+    width:33%;
+    height:30px;
+    margin:2px;
+    border-radius: 15px;
+    background: dodgerblue;
+    transition: all 0.4s ease-in-out;
+    left:0;
+}
+
+#big-title-edit{
+position: absolute;
+top:20px;
+margin:auto;
+}
+
+#big-title-edit-input{
+    border-radius: 20px;
+    outline: none;
+    border: none;
+    padding: 15px;
+    transform: scale(0.4);
+    color:white;
+    transition: all 0.2s ease-in-out;
+    background-color:rgba(255,255,255,0.2);
+    font-family: "Pixelify Sans";
+    z-index: 0;
+}
+
+#big-title-edit-input:hover{
+    transform: scale(1);
+    opacity:0.7;
+    background-color:rgb(51, 51, 51);
+    transition: all 0.1s ease-in-out;
+    z-index: 5;
+}
+
+#big-title-edit-input:focus{
+    z-index: 5;
+    transform: scale(1);
+    background-color:rgb(51, 51, 51);
+    opacity:0.7;
+    transition: all 0.1s ease-in-out;
+}
+
+#no-shuffle{
+    position: relative;
+}
+
+#shuffle-slash{
+    position: absolute;
+    width:2px;
+    height:20px;
+    left:15px;
+    top:9px;
+    background-color: #fff;
+    transform: rotateZ(-25deg);
+}
+
+#repeat-one{
+    position: relative;
+}
+
+#circle-icon{
+    position: absolute;
+    top:0;
+    right:0;
+    transform: scale(0.8);
+}
+#one-icon{
+    position: absolute;
+    top:0;
+    right:4px;
+    color:#222;
+    transform: scale(0.5);
+}
+
+    </style>
+</head>
+<body>
+    <div id="container">
+<audio id="music">
+    </audio>
+
+    </div>
+
+    
+
+    <div id="audio-spectrum-container" class="audio-spectrum-container">
+<div id="track-info" class="track-info">
+    <p id="track-name">Choose your favorite NCS playlist and enjoy!</p>
+</div>
+
+<!-- 3D Spectrum -->
+
+<div id="circles-spectrum-container-main">
+
+    <div id="circles-spectrum-container" class="circles-spectrum-container hide">
+        
+        <div id='plane-1' class="plane"></div>
+            <div id='plane-2' class="plane"></div>
+                <div id='plane-3' class="plane"></div>
+                
+    </div>
+    </div>
+
+    <!-- Circles Spectrum -->
+
+    <div id="circles-spectrum-2d-container-main">
+
+        <div id="circles-spectrum-2d-container" class="circles-spectrum-2d-container hide">
+
+            
+            
+            <!-- <div id='circles-2d-spectrum-plane' class="plane"></div> -->
+                
+                    
+        </div>
+        </div>
+
+    <div id="big-title">
+        <h1>NCS</h1>
+    </div>
+
+    <!-- 2D Spectrum -->
+
+        <div id="audio-bars-container" class="audio-bars-container"> 
+
+        </div>
+        
+        
+        <div id="player-controls" class="player-controls">
+
+            <div id="slider" class="slider hide">
+                <div id="time-elapsed" class="time-elapsed"></div>
+                <div id="slider-css" class="slider-css">
+                    <input id='slider-input' type="range" value="0" class="slider" step="0.01">
+                </div>
+            </div>
+
+            <div class="control-buttons">
+
+                <div id='shuffle' class="shuffle-repeat hide">
+                    <i class="fa-solid fa-shuffle"></i>
+                </div>
+
+                <div id="no-shuffle" class="shuffle-repeat">
+                    <div id="shuffle-slash"></div>
+                    <i class="fa-solid fa-shuffle"></i>
+                </div>
+
+
+<div id="previous-track-container" class="next-track-container">
+                <div id='previous-track' class="next-track">
+                    <i class="fa-solid fa-play"></i>
+                    <div id="next-track-line"></div>
+                   </div> 
+                </div>
+
+                <div id="play-pause-container"  class="play-pause-container">
+                    <div id="play-pause" class="play-pause">
+                        <i id='play-pause-icon' class="fa-solid fa-play"></i>
+                </div>
+    
+            </div>
+
+            <div id='next-track-container' class="next-track-container">
+
+            <div id='next-track' class="next-track">
+                <i class="fa-solid fa-play"></i>
+                <div id="next-track-line"></div>
+               </div> 
+            </div>
+
+            <div id='repeat' class="shuffle-repeat">
+                <i class="fa-solid fa-repeat"></i>
+            </div>
+
+            <div id='repeat-one' class="shuffle-repeat hide">
+                <div id="circle-icon">
+                    <i class="fa fa-circle" aria-hidden="true"></i>
+                </div>
+                <div id="one-icon">
+                    <i class="fa-solid fa-1"></i>
+                </div>
+                <i class="fa-solid fa-repeat"></i>
+            </div>
+
+
+
+
+            </div>
+                
+        </div>
+        </div>
+
+        <div id='playlist' class="playlist hide">
+            
+
+        </div>
+
+        <div id="folder-input-container" class="folder-input-container">
+            <label for="folder-input" class="folder-input-label"></label>
+            <input type="file" id='folder-input' webkitdirectory />
+        </div>
+
+        <div id="volume-control-container" class="volume-control-container">
+
+            <!-- Mute volume icon -->
+            <!-- <i class="fas fa-volume-mute"></i> -->
+            <div id="volume-control-icon"><i class="fa fa-volume-up" aria-hidden="true"></i></div>
+            <div id="volume-control-slider" class="volume-control-slider">
+                <input id='volume-control-slider-input' type="range" min="0" max="1" step="0.01">
+            </div>
+        </div>
+        
+
+        <div id="toggle-spectrum-container" class="toggle-spectrum-container">
+            <div id="toggle-background" class="toggle-background left"></div>
+            <div id="2D" class="toggle-tile">
+                <p class="toggle-spectrum-text">Bars</p>
+                
+            </div>
+
+            <div id="3D" class="toggle-tile">
+                <p class="toggle-spectrum-text">3D</p>
+            </div>
+
+            <div id="circles" class="toggle-tile">
+                <p class="toggle-spectrum-text">Radial</p>
+            </div>
+        </div>
+
+        <div id="big-title-edit">
+            <input id='big-title-edit-input' type="text" />
+        </div>
+    
+</body>
+<script>
+let linesCount = 6;
+let planeCount = 6;
+let rotateOffset = -90;
+
+let previousTrack = 0;
+let currentTrack = 0;
+let currentDuration = 0;
+
+let isTitleEdit = false;
+
+let currentAudioSource = null;
+
+let isPaused = true;
+let isDrag = false;
+
+let isPlayerOn = false;
+
+let is3D = false;
+let isCircles = false;
+
+let volume = 0.5;
+let currentVolume = 0.5;
+
+let isRepeatOne = false;
+let isShuffle = false;
+
+let isMuted = false;
+let keyTrigger = false;
+
+
+
+window.addEventListener('load',()=>{
+    // if(window.innerWidth <= 800){
+    //     is3D = true;
+    // } else {
+    //     is3D = false;
+    // }    
+});
+
+function generatePlane(j,deg){
+    let plane = document.createElement('div');
+    plane.id = `plane-${j}`;
+    plane.classList.add('plane');
+    document.getElementById('circles-spectrum-container').appendChild(plane);
+    for(let i=0;i<linesCount;i++){
+        let line = document.createElement('div');
+        line.classList.add('line');
+        line.style.transform = `rotateZ(${i*(360/linesCount)}deg) rotateX(${deg}deg)`;
+        document.getElementById(`plane-${j}`).appendChild(line);
+    }
+}
+
+function  initializePlaylist(folderInput){
+    if(audioContext.state === "suspended"){
+        isPlayerOn = true;
+        document.getElementById('playlist').classList.remove('hide');
+        isPaused = false;
+        audioContext.resume();
+    }
+    let playlist = document.getElementById('playlist');
+    for(let i=0;i<folderInput.files.length;i++){
+        let playlistItem = document.createElement('div');
+        playlistItem.classList.add('playlist-item');
+        playlistItem.id = `track-${i}`;
+        playlistItem.addEventListener('click',()=>{
+            selectTrack(i,playlistItem);
+        })
+        playlistItem.innerHTML = `${folderInput.files[i].name.substr(0,folderInput.files[i].name.lastIndexOf('.'))}`;
+        playlist.appendChild(playlistItem);
+        audio.src = URL.createObjectURL(folderInput.files[0]);
+        // playlist.insertAdjacentHTML('beforeend',`
+        //     <div class='playlist-item' id='track-${i}' onclick='selectTrack(i)'>
+        //     ${folderInput.files[i].name.substr(0,folderInput.files[i].name.lastIndexOf('.'))}
+        //     </div>
+        //     `)
+
+            
+    }
+}
+
+function selectTrack(i,playlistItem){
+    if(document.getElementById('slider').classList.contains('hide')){
+        document.getElementById('player-controls').classList.add('selectable');
+        document.getElementById('slider').classList.remove('hide');
+
+        
+    }
+    if(document.getElementById('play-pause-icon').classList.contains('fa-play')){
+        document.getElementById('play-pause-icon').classList.replace('fa-play','fa-pause');
+    }
+    currentTrack = i;
+    audio.pause();
+    audio.currentTime = 0;
+    let folderInput = document.getElementById('folder-input');
+    let songName = `${folderInput.files[i].name}`;
+    const tempURL = URL.createObjectURL(folderInput.files[i]);
+    audio.src = tempURL;
+    if(audioContext.state !== 'suspended')
+    document.getElementById('track-name').innerText = `${songName.substring(0,songName.lastIndexOf('.'))}`;
+    // //console.log('current track: ' + i);
+    playlistItem.classList.add('current-track');
+    document.getElementById(`track-${previousTrack}`).classList.remove('current-track');
+    document.getElementById(`track-${previousTrack}`).classList.remove('selected');
+    previousTrack = i;
+    playlistItem.classList.add('current-track');
+    playlistItem.classList.add('selected');
+    currentAudioSource = audio.src;
+    audio.play();
+}
+
+function playNext(){
+    if(isPaused === true){
+        isPaused = false;
+    }
+    let songsLength = document.getElementById('playlist').children.length;
+    if(isShuffle){
+
+        let randomTrack = Math.floor(Math.random()*songsLength);
+        currentTrack = randomTrack;
+        selectTrack(randomTrack,document.getElementById(`track-${randomTrack}`));
+
+    } else {
+
+        currentTrack = (currentTrack + 1)%songsLength;
+        audio.pause();
+        audio.currentTime = 0;
+        selectTrack(currentTrack,document.getElementById(`track-${currentTrack}`));
+
+    }
+}
+
+function playPrevious(){
+    if(isPaused === true){
+        isPaused = false;
+    }
+    let songsLength = document.getElementById('playlist').children.length;
+    if(isShuffle){
+
+        let randomTrack = Math.floor(Math.random()*songsLength);
+        currentTrack = randomTrack;
+        selectTrack(randomTrack,document.getElementById(`track-${randomTrack}`));
+
+    } else {
+
+        currentTrack = (currentTrack - 1 + songsLength)%songsLength;
+        audio.currentTime = 0;
+        selectTrack(currentTrack,document.getElementById(`track-${currentTrack}`));
+
+    }
+}
+
+document.getElementById('next-track-container').addEventListener('click',()=>{
+    if(!isPlayerOn)return;
+    playNext();
+});
+
+document.getElementById('previous-track-container').addEventListener('click',()=>{
+    if(!isPlayerOn)return;
+    playPrevious();
+})
+
+for(let a=0;a<planeCount;a++){
+    generatePlane(a,rotateOffset);
+    rotateOffset+=(90/(planeCount/2));
+}
+
+//Audio
+
+let audio = document.createElement('audio');
+audio.id='current-audio-track';
+audio.src = null;
+// audio.src = 'Jim Yosef  Alex Skrindo - Ruby  Future Trap  NCS - Copyright Free Music.mp3';
+document.getElementById('container').appendChild(audio);
+
+document.getElementById('current-audio-track').addEventListener('loadedmetadata',()=>{
+    //console.log(audio.duration);
+});
+
+let audioContext = new window.AudioContext();
+
+const track = audioContext.createMediaElementSource(audio);
+
+const analyser = audioContext.createAnalyser();
+analyser.fftSize = 512;
+
+track.connect(analyser);
+analyser.connect(audioContext.destination);
+
+// audio.play();
+function initializeAudioBars(barsCount){
+    document.querySelector('.audio-bars-container').innerHTML = "";
+    for(let i=0;i<barsCount;i++){
+        const bar = document.createElement('div');
+        bar.classList.add('audio-bar');
+        document.querySelector('.audio-bars-container').appendChild(bar);
+    }
+}
+
+
+function initializeCirclesAudioBars(barsCount){
+    document.querySelector('.circles-spectrum-2d-container').innerHTML = "";
+    for(let i=0;i<barsCount;i++){
+        const bar = document.createElement('div');
+        bar.classList.add('circles-spectrum-bar');
+        bar.style.transform = `rotate(${2*i}deg)`;
+
+        const glowElement = document.createElement('div');
+        glowElement.classList.add('glow-element');
+        glowElement.style.transform = `rotate(${2*i}deg) translateY(150px)`;
+
+        document.querySelector('.circles-spectrum-2d-container').appendChild(bar);
+        // document.querySelector('.circles-spectrum-2d-container').appendChild(glowElement);
+        
+    }
+}
+
+
+let barsCount = Math.floor(0.7*analyser.frequencyBinCount);
+initializeAudioBars(barsCount);
+
+let circleBarsCount = Math.floor(0.6*analyser.frequencyBinCount);
+    initializeCirclesAudioBars(circleBarsCount);
+
+    // Align circles 2d spectrum near big title
+    document.getElementById('circles-spectrum-2d-container').style.top = `${window.innerHeight/2 - document.getElementById('circles-spectrum-2d-container').offsetHeight/2 - 150}px`;
+    document.getElementById('circles-spectrum-2d-container').style.left = `${window.innerWidth/2 - document.getElementById('circles-spectrum-2d-container').offsetWidth/2 - 160}px`;
+
+const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+if(audioContext.state !== 'suspended')
+document.getElementById('track-name').innerText = `${audio.src.substring(audio.src.lastIndexOf('/')+1).split("%20").join(" ")}`;
+
+function updateFrequencyData(){
+
+    analyser.getByteFrequencyData(frequencyData);
+
+    
+    
+
+    // 3D Spectrum
+
+    //Random color
+
+
+    if(is3D){
+
+        //enable 3d spectrum and disable 2d spectrum
+
+        document.getElementById('audio-bars-container').classList.add('hide');
+        document.getElementById('circles-spectrum-2d-container').classList.add('hide');
+        document.getElementById('circles-spectrum-container').classList.remove('hide');
+
+        let randomColors = [Math.random()*255,Math.random()*255,Math.random()*255];
+        let frequencyIndex = 0;
+        for(let i=0;i<planeCount;i++){
+            for(let j=0;j<linesCount;j++){
+                document.getElementById(`plane-${i}`).getElementsByClassName('line')[j].style.height = `${(frequencyData[frequencyIndex%analyser.frequencyBinCount]/2.2)}px`;
+                frequencyIndex++;
+                //Random colors
+                // document.getElementById(`plane-${i}`).getElementsByClassName('line')[j].style.background = `linear-gradient(rgb(${randomColors[0]},${randomColors[1]},${randomColors[2]}) 3px,rgb(${Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},0,${Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 3px )`;
+                //Static color
+                // document.getElementById(`plane-${i}`).getElementsByClassName('line')[j].style.background = `linear-gradient(yellow 3px,rgb(${Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},0,${Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 3px )`;
+                //Intensity color
+                document.getElementById(`plane-${i}`).getElementsByClassName('line')[j].style.background = `linear-gradient(rgb(${255 - Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},255,${255 - Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 3px,rgb(${Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},0,${Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 3px )`;
+        }
+    }
+    
+        
+    } else {
+
+        if(isCircles){
+
+            document.getElementById('circles-spectrum-container').classList.add('hide');
+document.getElementById('circles-spectrum-2d-container').classList.remove('hide');
+document.getElementById('audio-bars-container').classList.add('hide');
+
+
+               // Circles Spectrum
+
+    for(let i=0;i<circleBarsCount;i++){
+
+        // From left to right increasing frequency
+        document.getElementsByClassName('circles-spectrum-bar')[i].style.height = `${(frequencyData[i] + 50)}px`;
+
+        //toggle glow element intensity based on  bar height
+        // if(document.getElementsByClassName('circles-spectrum-bar')[i].getBoundingClientRect().height > 110){
+        //     console.log('opacity: ', `${(parseFloat(document.getElementsByClassName('circles-spectrum-bar')[i].getBoundingClientRect().height)/300)}`);
+        //     document.getElementsByClassName('glow-element')[i].style.opacity = `${(parseFloat(document.getElementsByClassName('circles-spectrum-bar')[i].style.height)/300)}`;
+        // }
+
+        //alter the gradient at the circumference based on frequency
+
+        //keep code here
+
+
+
+        document.getElementsByClassName('circles-spectrum-bar')[i].style.background = `linear-gradient(rgb(${Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},0,${Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 110px, (rgb(${255 - Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},255,${255 - Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 110px`;
+
+        // From right to left increasing frequency
+        // document.getElementsByClassName('circles-spectrum-bar')[circleBarsCount - i - 1].style.height = `${(frequencyData[i] + 50)}px`;
+        // document.getElementsByClassName('circles-spectrum-bar')[circleBarsCount - i - 1].style.background = `linear-gradient(rgb(${Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},0,${Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 110px, (rgb(${255 - Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},255,${255 - Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 110px`;
+    }
+
+
+        } else {
+//disable other spectrums and enable 2d bars spectrum
+
+document.getElementById('circles-spectrum-container').classList.add('hide');
+document.getElementById('circles-spectrum-2d-container').classList.add('hide');
+document.getElementById('audio-bars-container').classList.remove('hide');
+
+// 2D Spectrum
+
+for(let i=0;i<barsCount;i++){
+document.getElementsByClassName('audio-bar')[i].style.height = `${(frequencyData[i])}px`;
+}
+
+
+
+}
+        }
+
+        
+
+ 
+
+    
+
+
+    
+    
+
+
+
+    // //console.log(frequencyData);
+
+    document.getElementById('big-title').querySelector('h1').style.fontSize = `${Math.max(80,(frequencyData[4]/2)+20)}px`;
+    document.getElementById('audio-spectrum-container').style.backgroundColor = `rgb(${Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},0,${Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])})`;
+    requestAnimationFrame(updateFrequencyData);
+}
+
+document.getElementById('slider-input').addEventListener('input',()=>{
+    let value = document.getElementById('slider-input').value;
+    currentDuration = (value/100)*audio.duration;
+    updateTime();
+    // //console.log('current duration: ',currentDuration);
+    document.getElementById('slider-input').style.background = `linear-gradient(to right,#eee ${value}%, #333 ${value}%)`;
+});
+
+document.getElementById('slider-input').addEventListener('mousedown',()=>{
+    isDrag = true;
+});
+
+document.getElementById('slider-input').addEventListener('mouseup',()=>{
+    isDrag = false;
+});
+
+document.getElementById('slider-input').addEventListener('change',()=>{
+    audio.pause();
+    audio.currentTime = currentDuration;
+    audio.play();
+})
+
+document.getElementById('play-pause-container').addEventListener('click',()=>{
+    if(!isPlayerOn)return;
+    if(isPaused){
+        document.getElementById('play-pause-icon').classList.replace('fa-play','fa-pause');
+        audio.play();
+    } else {
+        document.getElementById('play-pause-icon').classList.replace('fa-pause','fa-play');
+        audio.pause();
+    }
+    isPaused = !isPaused;
+});
+
+// When audio can be played or paused via external methods (bluetooth headsets)
+
+audio.addEventListener('pause',()=>{
+    document.getElementById('play-pause-icon').classList.replace('fa-pause','fa-play');
+    audio.pause();
+    isPaused = true;
+});
+audio.addEventListener('play',()=>{
+    document.getElementById('play-pause-icon').classList.replace('fa-play','fa-pause');
+        audio.play();
+        isPaused = false;
+});
+
+document.addEventListener('keydown',(e)=>{
+    if(!isPlayerOn || isTitleEdit)return;
+    console.log(e.key);
+    if(e.key === " "){
+
+        if(isPaused){
+            document.getElementById('play-pause-icon').classList.replace('fa-play','fa-pause');
+            audio.play();
+        } else {
+            document.getElementById('play-pause-icon').classList.replace('fa-pause','fa-play');
+            audio.pause();
+        }
+        isPaused = !isPaused;
+    } else if(e.key === "m"){
+        keyTrigger = true;
+        
+        isMuted = !isMuted;
+
+        
+    if(isMuted){
+        document.getElementById('volume-control-slider-input').value = '0';
+        document.getElementById('volume-control-slider-input').dispatchEvent(new Event('input'));
+    } else {
+        document.getElementById('volume-control-slider-input').value = currentVolume;
+        document.getElementById('volume-control-slider-input').dispatchEvent(new Event('input'));
+        // setVolume(volume);
+    }
+    keyTrigger = false;
+    
+    
+    } else if(audio.readyState > 0){
+        
+        if(e.key === "ArrowRight"){
+            audio.currentTime = Math.min(audio.duration,audio.currentTime+5);
+        } else if (e.key === "ArrowLeft"){
+            audio.currentTime = Math.max(0,audio.currentTime-5);
+        } else if(e.key === "n"){
+            playNext();
+        } else if(e.key === "p"){
+            playPrevious();
+        } else if(e.key === "r"){
+            if(!document.getElementById('repeat').classList.contains('hide')){
+                //repeat all button currently
+                document.getElementById('repeat').classList.add('hide');
+                document.getElementById('repeat-one').classList.remove('hide');
+                isRepeatOne = true;
+            } else {
+                //repeat one button currently
+                document.getElementById('repeat').classList.remove('hide');
+                document.getElementById('repeat-one').classList.add('hide');
+                isRepeatOne = false;
+            }
+
+        } else if(e.key === "s"){
+            if(!document.getElementById('shuffle').classList.contains('hide')){
+                //shuffle button currently
+                document.getElementById('shuffle').classList.add('hide');
+                document.getElementById('no-shuffle').classList.remove('hide');
+                isShuffle = false;
+
+            } else {
+                //no shuffle button currently
+                document.getElementById('shuffle').classList.remove('hide');
+                document.getElementById('no-shuffle').classList.add('hide');
+                isShuffle = true;
+            }
+
+        } 
+    }
+});
+
+requestAnimationFrame(updateFrequencyData);
+document.getElementById('')
+//console.log(audio.duration);
+
+function updateTime(){
+    let timeElapsed = document.getElementById('time-elapsed');
+        let minutes = Math.floor(currentDuration/60);
+        let seconds = Math.floor(currentDuration)%60;
+        if(seconds < 10){
+            timeElapsed.innerHTML = `${minutes}:0${seconds%60}`;
+        } else {
+            timeElapsed.innerHTML = `${minutes}:${Math.floor(seconds)%60}`;
+        }
+        let totalMinutes = Math.floor(audio.duration/60);
+        let totalSeconds = Math.floor(audio.duration)%60;
+        if(totalSeconds < 10){
+            timeElapsed.innerHTML += ` / ${totalMinutes}:0${totalSeconds}`;
+        } else {
+            timeElapsed.innerHTML += ` / ${totalMinutes}:${totalSeconds}`;
+        }
+}
+
+setInterval(() => {
+
+    
+
+    if(audio.readyState > 0 && !isPaused && !isDrag){
+        currentDuration = audio.currentTime;
+        document.getElementById('slider-input').value = (currentDuration/audio.duration)*100;
+        document.getElementById('slider-input').dispatchEvent(new Event('input'));
+        // //console.log(document.getElementById('slider-input').value);
+
+        //update time
+        if(!isDrag)
+        updateTime();
+
+    }
+}, 900);
+
+document.getElementById('folder-input').addEventListener('change',()=>{
+    let folderInput = document.getElementById('folder-input'); 
+    folderInput.style.display = 'none';
+    //console.log(folderInput.files);
+    console.log('all songs: ');
+    for(let i=0;i<folderInput.files.length;i++){
+        console.log(folderInput.files[i].name);
+    }
+     initializePlaylist(folderInput);
+});
+
+document.getElementById('current-audio-track').addEventListener('ended',()=>{
+    audio.pause();
+    setTimeout(() => {
+        audio.currentTime = 0;
+        if(isRepeatOne){
+            audio.play();
+            return;
+        } else {
+            if(isShuffle){
+                let randomTrack = Math.floor(Math.random()*document.getElementById('playlist').children.length);
+                selectTrack(randomTrack,document.getElementById(`track-${randomTrack}`));
+            } else {
+                playNext();
+            }
+        }
+    }, 2000);
+});
+
+//initial volume
+audio.volume = 0.5;
+document.getElementById('volume-control-slider-input').style.background = `linear-gradient(to right,#eee ${0.5*100}%, #333 ${0.5*100}%)`;
+
+
+//dispatch
+
+document.getElementById('volume-control-slider-input').addEventListener('input',()=>{
+    console.log(isMuted);
+
+    if(!isMuted){
+        if(!keyTrigger){
+            volume = document.getElementById('volume-control-slider-input').value;
+            setVolume(volume);
+        } else {
+            setVolume(currentVolume);
+        }
+    } else {
+        if(!keyTrigger){
+            if(document.getElementById('volume-control-slider-input').value > '0'){
+                volume = document.getElementById('volume-control-slider-input').value;
+                isMuted = false;
+                setVolume(volume);
+            }
+        }
+        setVolume('0');
+    }
+    
+});
+
+document.getElementById('volume-control-slider-input').addEventListener('change',()=>{
+    let volumeInput = document.getElementById('volume-control-slider-input');
+    if(volumeInput.value > '0'){
+        currentVolume = volumeInput.value;
+    } else {
+        isMuted = true;
+    }
+});
+
+function setVolume(volume){
+
+    console.log('volume set to: ',volume);
+
+    audio.volume = volume;
+    document.getElementById('volume-control-slider-input').style.background = `linear-gradient(to right,#eee ${volume*100}%, #333 ${volume*100}%)`;
+
+    if(volume === '0'){
+        document.getElementById('volume-control-icon').querySelector('i').classList = "fas fa-volume-mute";
+    }
+     else {
+        document.getElementById('volume-control-icon').querySelector('i').classList = "fa fa-volume-up";
+    }
+
+    
+
+}
+
+window.addEventListener('resize',()=>{
+
+    document.getElementById('big-title').style.top = `${(document.getElementById('audio-spectrum-container').getBoundingClientRect().height - 70)/2 - document.getElementById('big-title').offsetHeight/2}px`;
+    document.getElementById('big-title').style.left = `${window.innerWidth/2 - document.getElementById('big-title').offsetWidth/2}px`;
+    
+    if(!isPlayerOn)return;
+
+    document.getElementById('circles-spectrum-2d-container').style.top = `${window.innerHeight/2 - document.getElementById('circles-spectrum-2d-container').offsetHeight/2 - 50}px`;
+    document.getElementById('circles-spectrum-2d-container').style.left = `${window.innerWidth/2 - document.getElementById('circles-spectrum-2d-container').offsetWidth/2}px`;
+    if(window.innerWidth <= 800){
+        
+
+        barsCount = Math.floor(0.4*analyser.frequencyBinCount);
+
+        initializeAudioBars(barsCount);
+
+        // if(!is3D){
+   
+        //     toggleSpectrum('3D');
+        //     document.getElementById('circles-spectrum-container').classList.remove('hide');
+        //     document.getElementById('audio-bars-container').classList.add('hide');
+        // }
+    } else {
+        
+
+        barsCount = Math.floor(0.7*analyser.frequencyBinCount);
+
+        initializeAudioBars(barsCount);
+
+        // toggleSpectrum('2D');
+        // document.getElementById('audio-bars-container').classList.remove('hide');
+        // document.getElementById('circles-spectrum-container').classList.add('hide');
+    }
+})
+
+// Toggle 2D/3D Spectrum
+
+
+function toggleSpectrum(spectrum){
+    let toggleBackground = document.getElementById('toggle-background');
+    if(spectrum === '2D'){
+        toggleBackground.style.left = '0';
+        is3D = false;
+        isCircles = false;
+        // toggleBackground.classList.replace('right','left');
+    } else if(spectrum === '3D'){
+        toggleBackground.style.left = '33%';
+        is3D = true;
+        isCircles = false;
+        // toggleBackground.classList.replace('left','right');
+    } else if(spectrum === 'circles'){
+        is3D = false;
+        isCircles = true;
+        toggleBackground.style.left = '66%';
+    }
+}
+
+document.querySelectorAll('.toggle-tile').forEach((tile)=>{
+    
+    tile.addEventListener('click',()=>{
+        if(!isPlayerOn)return;
+    console.log('click')
+    let toggleBackground = document.getElementById('toggle-background');
+
+    if(tile.id === '2D'){
+        toggleSpectrum('2D');
+    } else if(tile.id === '3D'){
+        toggleSpectrum('3D');
+
+    } else if(tile.id === 'circles'){
+        toggleSpectrum('circles');
+
+    }
+})
+    
+});
+
+document.getElementById('big-title-edit-input').addEventListener('keydown',(e)=>{
+    let input = document.getElementById('big-title-edit-input');
+    if(e.key === "Enter"){
+        if(input.value !== ""){
+            document.getElementById('big-title').querySelector('h1').innerText = input.value;
+            document.getElementById('big-title').style.top = `${(document.getElementById('audio-spectrum-container').getBoundingClientRect().height - 70)/2 - document.getElementById('big-title').offsetHeight/2}px`;
+            document.getElementById('big-title').style.left = `${window.innerWidth/2 - document.getElementById('big-title').offsetWidth/2}px`;
+            input.value = "";
+
+        }
+    }
+})
+
+document.getElementById('big-title-edit-input').addEventListener('focus',()=>{
+    isTitleEdit = true;
+});
+
+document.getElementById('big-title-edit-input').addEventListener('blur',()=>{
+    isTitleEdit = false;
+});
+
+document.querySelectorAll('.shuffle-repeat').forEach((button)=>{
+    button.addEventListener('click',()=>{
+
+        if(button.id.includes('shuffle')){
+
+            if(button.id === 'shuffle'){
+                //shuffle button currently
+                document.getElementById('shuffle').classList.add('hide');
+                document.getElementById('no-shuffle').classList.remove('hide');
+                isShuffle = false;
+
+            } else {
+                //no shuffle button currently
+                document.getElementById('shuffle').classList.remove('hide');
+                document.getElementById('no-shuffle').classList.add('hide');
+                isShuffle = true;
+            }
+        } else {
+            if(button.id === 'repeat'){
+                //repeat all button currently
+                document.getElementById('repeat').classList.add('hide');
+                document.getElementById('repeat-one').classList.remove('hide');
+                isRepeatOne = true;
+            } else {
+                //repeat one button currently
+                document.getElementById('repeat').classList.remove('hide');
+                document.getElementById('repeat-one').classList.add('hide');
+                isRepeatOne = false;
+            }
+        }
+    });
+});
+
+document.getElementById('volume-control-icon').addEventListener('click',()=>{
+    
+isMuted = !isMuted;
+    
+if(isMuted){
+    document.getElementById('volume-control-slider-input').value = '0';
+    document.getElementById('volume-control-slider-input').dispatchEvent(new Event('input'));
+} else {
+    document.getElementById('volume-control-slider-input').value = currentVolume;
+    document.getElementById('volume-control-slider-input').dispatchEvent(new Event('input'));
+    // setVolume(volume);
+}
+});
+
+
+
+</script>
+</html>
