@@ -784,7 +784,29 @@ margin:auto;
         </div>
         </div>
 
-        <div id='playlist' class="playlist hide">
+        <!-- Playlist -->
+        <div id='playlist' class="playlist">
+            <div class='playlist-item' id='track-0'>
+                Different Heaven - Far Away
+                <audio id="Different Heaven - Far Away">
+                    <source src="./Different Heaven - Far Away.mp3" type="audio/ogg">
+                </audio>"
+            </div>
+            <div class='playlist-item' id='track-1'>
+                Culture Code - Make Me Move (feat. Karra) [Tobu Remix]
+                <audio id="Culture Code - Make Me Move (feat. Karra) [Tobu Remix]">
+                    <source src="./Culture Code - Make Me Move (feat. Karra) [Tobu Remix].mp3" type="audio/ogg">
+                </audio>"
+                
+            
+            </div>
+            <div class='playlist-item' id='track-2'>
+                Different Heaven - Far Away (Phantom Sage Remix)
+                <audio id="Different Heaven - Far Away (Phantom Sage Remix)">
+                    <source src="./Different Heaven - Far Away (Phantom Sage Remix).mp3" type="audio/ogg">
+                </audio>"
+                
+            </div>
             
 
         </div>
@@ -888,6 +910,7 @@ function  initializePlaylist(folderInput){
     }
     let playlist = document.getElementById('playlist');
     for(let i=0;i<folderInput.files.length;i++){
+        
         let playlistItem = document.createElement('div');
         playlistItem.classList.add('playlist-item');
         playlistItem.id = `track-${i}`;
@@ -896,16 +919,19 @@ function  initializePlaylist(folderInput){
         })
         playlistItem.innerHTML = `${folderInput.files[i].name.substr(0,folderInput.files[i].name.lastIndexOf('.'))}`;
         playlist.appendChild(playlistItem);
-        audio.src = URL.createObjectURL(folderInput.files[0]);
         // playlist.insertAdjacentHTML('beforeend',`
         //     <div class='playlist-item' id='track-${i}' onclick='selectTrack(i)'>
-        //     ${folderInput.files[i].name.substr(0,folderInput.files[i].name.lastIndexOf('.'))}
-        //     </div>
-        //     `)
-
+            //     ${folderInput.files[i].name.substr(0,folderInput.files[i].name.lastIndexOf('.'))}
+            //     </div>
+            //     `)
             
-    }
+            
+        }
+        audio.src = URL.createObjectURL(folderInput.files[0]);
+       
 }
+
+
 
 function selectTrack(i,playlistItem){
     if(document.getElementById('slider').classList.contains('hide')){
@@ -920,22 +946,29 @@ function selectTrack(i,playlistItem){
     currentTrack = i;
     audio.pause();
     audio.currentTime = 0;
-    let folderInput = document.getElementById('folder-input');
-    let songName = `${folderInput.files[i].name}`;
-    const tempURL = URL.createObjectURL(folderInput.files[i]);
-    audio.src = tempURL;
+    // let folderInput = document.getElementById('folder-input');
+    let songName = `${playlistItem.querySelector('audio').id}.mp3`;
+    audio.src = playlistItem.querySelector('audio').querySelector('source').src;
     if(audioContext.state !== 'suspended')
     document.getElementById('track-name').innerText = `${songName.substring(0,songName.lastIndexOf('.'))}`;
     // //console.log('current track: ' + i);
-    playlistItem.classList.add('current-track');
-    document.getElementById(`track-${previousTrack}`).classList.remove('current-track');
-    document.getElementById(`track-${previousTrack}`).classList.remove('selected');
+    // playlistItem.classList.add('current-track');
+    // document.getElementById(`track-${previousTrack}`).classList.remove('current-track');
+    // document.getElementById(`track-${previousTrack}`).classList.remove('selected');
     previousTrack = i;
-    playlistItem.classList.add('current-track');
-    playlistItem.classList.add('selected');
+    // playlistItem.classList.add('current-track');
+    // playlistItem.classList.add('selected');
     currentAudioSource = audio.src;
     audio.play();
 }
+
+document.querySelectorAll('.playlist-item').forEach((item)=>{
+    item.addEventListener('click',()=>{
+        selectTrack(item.id,item);
+    })
+})
+
+
 
 function playNext(){
     if(isPaused === true){
