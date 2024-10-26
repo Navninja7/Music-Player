@@ -27,6 +27,8 @@ let isShuffle = false;
 let isMuted = false;
 let keyTrigger = false;
 
+let songTrack;
+
 
 
 window.addEventListener('load',()=>{
@@ -294,6 +296,8 @@ document.getElementById('audio-bars-container').classList.add('hide');
 
 
 
+        // document.getElementsByClassName('circles-spectrum-bar')[i].style.background = `linear-gradient(rgb(${Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},0,${Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 110px, (rgb(${255 - Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},255,${255 - Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 110px`;
+
         document.getElementsByClassName('circles-spectrum-bar')[i].style.background = `linear-gradient(rgb(${Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},0,${Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 110px, (rgb(${255 - Math.max(0,(frequencyData[Math.floor(0.7*analyser.frequencyBinCount)]))},255,${255 - Math.max(0,frequencyData[Math.floor(0.6*analyser.frequencyBinCount)])}) 110px`;
 
         // From right to left increasing frequency
@@ -339,12 +343,38 @@ document.getElementsByClassName('audio-bar')[i].style.height = `${(frequencyData
     requestAnimationFrame(updateFrequencyData);
 }
 
+function trackSliderInterval(){
+
+    songTrack = setInterval(() => {
+        
+    
+
+        if(audio.readyState > 0 && !isPaused && !isDrag){
+            currentDuration = audio.currentTime;
+            document.getElementById('slider-input').value = (currentDuration/audio.duration)*100;
+            document.getElementById('slider-input').dispatchEvent(new Event('input'));
+            // //console.log(document.getElementById('slider-input').value);
+    
+            //update time
+            if(!isDrag)
+            updateTime();
+    
+        }
+    }, 100);
+
+
+}
+    
+    
+
 document.getElementById('slider-input').addEventListener('input',()=>{
     let value = document.getElementById('slider-input').value;
     currentDuration = (value/100)*audio.duration;
-    updateTime();
-    // //console.log('current duration: ',currentDuration);
+    clearInterval(songTrack);
     document.getElementById('slider-input').style.background = `linear-gradient(to right,#eee ${value}%, #333 ${value}%)`;
+    updateTime();
+    trackSliderInterval();
+    // //console.log('current duration: ',currentDuration);
 });
 
 document.getElementById('slider-input').addEventListener('mousedown',()=>{
@@ -358,7 +388,11 @@ document.getElementById('slider-input').addEventListener('mouseup',()=>{
 document.getElementById('slider-input').addEventListener('change',()=>{
     audio.pause();
     audio.currentTime = currentDuration;
-    audio.play();
+
+    setTimeout(() => {
+        
+        audio.play();
+    }, 1);
 })
 
 document.getElementById('play-pause-container').addEventListener('click',()=>{
@@ -479,22 +513,9 @@ function updateTime(){
         }
 }
 
-setInterval(() => {
 
-    
 
-    if(audio.readyState > 0 && !isPaused && !isDrag){
-        currentDuration = audio.currentTime;
-        document.getElementById('slider-input').value = (currentDuration/audio.duration)*100;
-        document.getElementById('slider-input').dispatchEvent(new Event('input'));
-        // //console.log(document.getElementById('slider-input').value);
-
-        //update time
-        if(!isDrag)
-        updateTime();
-
-    }
-}, 100);
+trackSliderInterval();
 
 document.getElementById('folder-input').addEventListener('change',()=>{
     let folderInput = document.getElementById('folder-input'); 
