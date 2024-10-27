@@ -1,8 +1,22 @@
-# Music Player #
+![157](https://github.com/user-attachments/assets/9e0a577d-7514-4ee2-85ba-5969d22d0bbc)# Music Player #
 
 A simple and feature-rich web-based music player with awesome audio spectrums!
 
 ## Music Player link: https://navninja7.github.io/Music-Player/
+
++ [How to use](#choose-a-playlist-folder-and-select-your-favorite-track)
+
++ [Toggle audio spectrums](#toggle-between-audio-spectrums)
+
++ [Volume Controls](#volume-controls)
+
++ [Hotkeys](#hotkeys)
+
++ [Custom Spectrum labels](#use-your-own-spectrum-label)
+
++ [Seek, shuffe and repeat](#seek-shuffle-and-repeat)
+
++ [Responsive Design](#responsive-design)
 
 ![135](https://github.com/user-attachments/assets/11c6b0e5-05ac-4a12-8948-48547905dd9f)
 
@@ -20,15 +34,17 @@ After uploading, the playlist appears on the right. Hover on the playlist to vie
 
 ## Hotkeys
 
-n - Next Track
+* n - Next Track
 
-p - Previous Track
+* p - Previous Track
 
-r - Repeat One/Repeat All
+* m - Mute/Unmute Track
 
-s - Shuffle/No Shuffle
+* r - Repeat One/Repeat All
 
-Spacebar - Play/Pause
+* s - Shuffle/No Shuffle
+
+* Spacebar - Play/Pause
 
 
 ## Use your own spectrum label
@@ -36,6 +52,14 @@ Spacebar - Play/Pause
 You can click the bar on the top to edit the spectrum label.
 
 ![141](https://github.com/user-attachments/assets/44eae4ad-45aa-48bd-ba7b-0f6178e42270)
+
+## Volume Controls
+
+Toggle volume using the volume slider, mute or unmute by either click, touch or using the 'm' hotkey.
+
+![157](https://github.com/user-attachments/assets/9b4293f6-7c71-4888-8355-67d00fabc72d)
+
+
 
 ## Seek, Shuffle and Repeat
 
