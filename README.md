@@ -1,4 +1,4 @@
-![157](https://github.com/user-attachments/assets/9e0a577d-7514-4ee2-85ba-5969d22d0bbc)# Music Player #
+# Music Player #
 
 A simple and feature-rich web-based music player with awesome audio spectrums!
 
