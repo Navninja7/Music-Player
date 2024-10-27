@@ -32,6 +32,10 @@ let songTrack;
 
 
 window.addEventListener('load',()=>{
+    document.getElementById('big-title').style.top = `${(document.getElementById('audio-spectrum-container').getBoundingClientRect().height - 70)/2 - document.getElementById('big-title').offsetHeight/2}px`;
+    document.getElementById('big-title').style.left = `${window.innerWidth/2 - document.getElementById('big-title').offsetWidth/2}px`;
+
+
     // if(window.innerWidth <= 800){
     //     is3D = true;
     // } else {
@@ -271,6 +275,12 @@ function updateFrequencyData(){
     } else {
 
         if(isCircles){
+
+            setTimeout(() => {
+                
+                document.getElementById('circles-spectrum-2d-container').style.top = `${window.innerHeight/2 - document.getElementById('circles-spectrum-2d-container').offsetHeight/2 - 50}px`;
+                document.getElementById('circles-spectrum-2d-container').style.left = `${window.innerWidth/2 - document.getElementById('circles-spectrum-2d-container').offsetWidth/2}px`;
+            }, 1);
 
             document.getElementById('circles-spectrum-container').classList.add('hide');
 document.getElementById('circles-spectrum-2d-container').classList.remove('hide');
@@ -612,7 +622,7 @@ window.addEventListener('resize',()=>{
     document.getElementById('big-title').style.left = `${window.innerWidth/2 - document.getElementById('big-title').offsetWidth/2}px`;
     
     if(!isPlayerOn)return;
-
+    
     document.getElementById('circles-spectrum-2d-container').style.top = `${window.innerHeight/2 - document.getElementById('circles-spectrum-2d-container').offsetHeight/2 - 50}px`;
     document.getElementById('circles-spectrum-2d-container').style.left = `${window.innerWidth/2 - document.getElementById('circles-spectrum-2d-container').offsetWidth/2}px`;
     if(window.innerWidth <= 800){
