@@ -348,16 +348,16 @@ function trackSliderInterval(){
     songTrack = setInterval(() => {
         
     
+        if(!isDrag)
+        updateTime();
 
-        if(audio.readyState > 0 && !isPaused && !isDrag){
+        if(audio.readyState > 0 && !isDrag){
             currentDuration = audio.currentTime;
             document.getElementById('slider-input').value = (currentDuration/audio.duration)*100;
             document.getElementById('slider-input').dispatchEvent(new Event('input'));
             // //console.log(document.getElementById('slider-input').value);
     
             //update time
-            if(!isDrag)
-            updateTime();
     
         }
     }, 100);
@@ -386,12 +386,13 @@ document.getElementById('slider-input').addEventListener('mouseup',()=>{
 });
 
 document.getElementById('slider-input').addEventListener('change',()=>{
-    audio.pause();
+    // audio.pause();
     audio.currentTime = currentDuration;
 
     setTimeout(() => {
-        
-        audio.play();
+        if(!isPaused){
+            audio.play();
+        }
     }, 1);
 })
 
@@ -422,6 +423,12 @@ audio.addEventListener('play',()=>{
 
 document.addEventListener('keydown',(e)=>{
     if(!isPlayerOn || isTitleEdit)return;
+    if(e.key === "ArrowRight"){
+        console.log("Seek right");
+        audio.currentTime = Math.min(audio.duration,audio.currentTime+5);
+    } else if (e.key === "ArrowLeft"){
+        audio.currentTime = Math.max(0,audio.currentTime-5);
+    }
     console.log(e.key);
     if(e.key === " "){
 
@@ -452,11 +459,7 @@ document.addEventListener('keydown',(e)=>{
     
     } else if(audio.readyState > 0){
         
-        if(e.key === "ArrowRight"){
-            audio.currentTime = Math.min(audio.duration,audio.currentTime+5);
-        } else if (e.key === "ArrowLeft"){
-            audio.currentTime = Math.max(0,audio.currentTime-5);
-        } else if(e.key === "n"){
+         if(e.key === "n"){
             playNext();
         } else if(e.key === "p"){
             playPrevious();
@@ -698,6 +701,7 @@ document.getElementById('big-title-edit-input').addEventListener('focus',()=>{
 });
 
 document.getElementById('big-title-edit-input').addEventListener('blur',()=>{
+    document.getElementById('big-title-edit-input').value = "";
     isTitleEdit = false;
 });
 
