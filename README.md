@@ -2,6 +2,8 @@
 
 A simple and feature-rich web-based music player with awesome audio spectrums!
 
+## Music Player link: https://navninja7.github.io/Music-Player/
+
 ![135](https://github.com/user-attachments/assets/11c6b0e5-05ac-4a12-8948-48547905dd9f)
 
 ## Choose a playlist folder and select your favorite track
